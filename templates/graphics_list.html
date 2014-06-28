@@ -2,9 +2,16 @@
 
 {% block content %}
     <h1>Graphics list</h1>
-    <ul>
-    {% for fi in pics %}
-      <li><a href="/g/{{ fi }}" >Graphic {{ fi }}</a></li>
+
+    {% for category, pic_list in pics|sort %}
+      {% if pic_list %}
+        <h2>{{ category }}</h2>
+        <ul>
+        {% for fi in pic_list|sort%}
+          <li><a href="/g/{{ category }}/{{ fi }}" >{{ fi }}</a></li>
+        {% endfor %}
+        </ul>
+      {% endif %}
     {% endfor %}
-    </ul>
+
 {% endblock %}
