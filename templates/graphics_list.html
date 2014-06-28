@@ -1,0 +1,10 @@
+{% extends 'application.html' %}
+
+{% block content %}
+    <h1>Graphics list</h1>
+    <ul>
+    {% for fi in pics %}
+      <li><a href="/g/{{ fi }}" >Graphic {{ fi }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

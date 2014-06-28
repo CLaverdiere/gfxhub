@@ -1,15 +1,6 @@
 {% extends 'application.html' %}
 
 {% block content %}
-  {% if n %}
-    <h1>Graphic {{ n }}</h1>
-    <img src="/static/raytraced_pics/s{{ n }}.png" />
-  {% else %}
-    <h1>Graphics list</h1>
-    <ul>
-    {% for g in range(1, 12) %}
-      <li><a href="/g/{{ g }}" >Graphic {{ g }}</a></li>
-    {% endfor %}
-    </ul>
-  {% endif %}
+  <h1>Graphic {{ pic }}</h1>
+  <img src="/static/raytraced_pics/{{ pic }}" />
 {% endblock %}
