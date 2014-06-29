@@ -42,6 +42,11 @@ def show_graphic_list(pics=None):
     pics = zip(categories, map(os.listdir, [G_DIR + fi for fi in categories]))
     return render_template('graphics_list.html', pics=pics)
 
+@app.route('/g/<category>/')
+def show_graphic_list_one_category(category=None):
+    pics = zip([category], map(os.listdir, [G_DIR + category]))
+    return render_template('graphics_list.html', pics=pics)
+
 @app.route('/g/<category>/<pic>')
 def show_graphic(category=None, pic=None):
     return render_template('graphics.html', category=category, pic=pic)

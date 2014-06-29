@@ -5,9 +5,9 @@
 
     {% for category, pic_list in pics|sort %}
       {% if pic_list %}
-        <h2>{{ category }}</h2>
+      <h2><a href="/g/{{ category }}">{{ category }}</a></h2>
         <ul>
-        {% for fi in pic_list|sort%}
+        {% for fi in pic_list|sort %}
           <li><a href="/g/{{ category }}/{{ fi }}" >{{ fi }}</a></li>
         {% endfor %}
         </ul>
