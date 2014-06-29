@@ -48,8 +48,15 @@ def show_graphic_list_one_category(category=None):
     return render_template('graphics_list.html', pics=pics)
 
 @app.route('/g/<category>/<pic>')
-def show_graphic(category=None, pic=None):
-    return render_template('graphics.html', category=category, pic=pic)
+def show_graphic(category=None, pic=None, adjacent_pics=None):
+    pics = sorted(os.listdir(G_DIR + category))
+    pic_index = pics.index(pic)
+    adjacent_pics = {'prev' : None, 'next': None}
+    if pic_index > 0:
+        adjacent_pics['prev'] = pics[pic_index-1]
+    if pic_index < len(pics)-1:
+        adjacent_pics['next'] = pics[pic_index+1]
+    return render_template('graphics.html', category=category, pic=pic, adjacent_pics=adjacent_pics)
 
 @app.errorhandler(404)
 def page_not_found(error):

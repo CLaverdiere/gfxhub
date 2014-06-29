@@ -1,7 +1,16 @@
 {% extends 'application.html' %}
 
 {% block content %}
-  <a href="/g/">Return to graphics index.</a>
+  <a href="/g/">Return to graphics index</a>
+
+  {% if adjacent_pics['prev'] %}
+    | <a href="/g/{{ category }}/{{ adjacent_pics['prev'] }}">Prev</a>
+  {% endif %}
+
+  {% if adjacent_pics['next'] %}
+    | <a href="/g/{{ category }}/{{ adjacent_pics['next'] }}">Next</a>
+  {% endif %}
+
   <h1>{{ pic }}</h1>
   <img src="/static/g_pics/{{ category }}/{{ pic }}" />
 {% endblock %}
