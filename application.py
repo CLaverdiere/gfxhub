@@ -32,33 +32,21 @@ def about():
 
 @app.route('/contribute', methods=['GET', 'POST'])
 def contribute(categories=None):
-    categories = os.listdir("static/g_pics/")
+    db = get_db()
+    cur = db.execute('select distinct category from graphics order by category desc');
+    categories = [row['category'] for row in cur.fetchall()]
     if request.method == 'POST':
-        category = request.form['category-picker']
-        if not category:
-            category = 'misc'
+        category = request.form['category-picker'] or 'misc'
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], category, filename))
+            db.execute('insert into graphics (title, category) values (?, ?)',
+                        [filename, category])
+            db.commit()
+            flash("Successfully uploaded graphic. Thanks!")
             return redirect('/g/' + category + '/' + filename)
     return render_template('contribute.html', categories=categories)
-
-@app.route('/dbshow')
-def dbshow():
-    db = get_db()
-    cur = db.execute('select title, category from graphics order by id desc')
-    graphics = cur.fetchall()
-    return render_template('dbshow.html', graphics=graphics)
-
-@app.route('/dbadd', methods=['POST'])
-def dbadd():
-    db = get_db()
-    db.execute('insert into graphics (title, category) values (?, ?)',
-                [request.form['title'], request.form['category']])
-    db.commit()
-    flash("New graphic posted.")
-    return redirect(url_for('dbshow'))
 
 @app.route('/g/')
 def show_graphic_category_list(categories=None):
@@ -101,6 +89,11 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXT
 
+@app.teardown_appcontext
+def close_db(error):
+    if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.close()
+
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
     rv.row_factory = sqlite3.Row
@@ -110,11 +103,6 @@ def get_db():
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
-
-@app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
 
 def init_db():
     with app.app_context():
