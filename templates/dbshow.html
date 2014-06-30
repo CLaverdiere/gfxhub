@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+  <form action="{{ url_for('dbadd') }}" method=post class=add-graphic>
+    <dl>
+      <dt>Title:
+      <dd><input type=text size=30 name=title>
+      <dt>Category:
+      <dd><input type=category size=30 name=category>
+      <dd><input type=submit value=Submit>
+    </dl>
+  </form>
+  {% for graphic in graphics %}
+    <p>{{ graphic.title|safe }}</p>
+  {% else %}
+    <li><em>Unbelievable.  No graphics here so far</em>
+  {% endfor %}
+{% endblock %}
