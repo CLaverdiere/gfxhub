@@ -61,25 +61,34 @@ def dbadd():
     return redirect(url_for('dbshow'))
 
 @app.route('/g/')
-def show_graphic_list(pics=None):
-    categories = os.listdir("static/g_pics/")
-    pics = zip(categories, map(os.listdir, [G_DIR + fi for fi in categories]))
-    return render_template('graphics_list.html', pics=pics)
+def show_graphic_category_list(categories=None):
+    db = get_db()
+    cur = db.execute('select distinct category from graphics order by category desc');
+    categories = cur.fetchall()
+    return render_template('category_list.html', categories=categories)
 
 @app.route('/g/<category>/')
-def show_graphic_list_one_category(category=None):
-    pics = zip([category], map(os.listdir, [G_DIR + category]))
+def show_graphic_list(category=None):
+    db = get_db()
+    cur = db.execute('select title, category from graphics where category=?', [category])
+    pics = cur.fetchall()
     return render_template('graphics_list.html', pics=pics)
 
-@app.route('/g/<category>/<pic>')
-def show_graphic(category=None, pic=None, adjacent_pics=None):
-    pics = sorted(os.listdir(G_DIR + category))
-    pic_index = pics.index(pic)
-    adjacent_pics = {'prev' : None, 'next': None}
-    if pic_index > 0:
-        adjacent_pics['prev'] = pics[pic_index-1]
-    if pic_index < len(pics)-1:
-        adjacent_pics['next'] = pics[pic_index+1]
+@app.route('/g/<category>/<pic_name>')
+def show_graphic(category=None, pic_name=None, adjacent_pics=None):
+    db = get_db()
+
+    cur = db.execute('select * from graphics where title=? and category=?', [pic_name, category])
+    pic = cur.fetchone()
+
+    prevcur = db.execute('select * from graphics where id=? and category=?', [pic['id'] - 1, category])
+    nextcur = db.execute('select * from graphics where id=? and category=?', [pic['id'] + 1, category])
+
+    prevpic = prevcur.fetchone()
+    nextpic = nextcur.fetchone()
+
+    adjacent_pics = {'prev' : prevpic, 'next': nextpic}
+
     return render_template('graphics.html', category=category, pic=pic, adjacent_pics=adjacent_pics)
 
 @app.errorhandler(404)

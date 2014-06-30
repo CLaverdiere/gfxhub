@@ -4,13 +4,13 @@
   <a href="/g/">Return to graphics index</a>
 
   {% if adjacent_pics['prev'] %}
-    | <a href="/g/{{ category }}/{{ adjacent_pics['prev'] }}">Prev</a>
+    | <a href="/g/{{ pic.category }}/{{ adjacent_pics['prev'].title }}">Prev</a>
   {% endif %}
 
   {% if adjacent_pics['next'] %}
-    | <a href="/g/{{ category }}/{{ adjacent_pics['next'] }}">Next</a>
+    | <a href="/g/{{ pic.category }}/{{ adjacent_pics['next'].title }}">Next</a>
   {% endif %}
 
-  <h1>{{ pic }}</h1>
-  <img src="/static/g_pics/{{ category }}/{{ pic }}" />
+  <h1>{{ pic.title }}</h1>
+  <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" />
 {% endblock %}

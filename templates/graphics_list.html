@@ -1,17 +1,10 @@
 {% extends 'application.html' %}
 
 {% block content %}
-    <h1>Graphics list</h1>
-
-    {% for category, pic_list in pics|sort %}
-      {% if pic_list %}
-      <h2><a href="/g/{{ category }}">{{ category }}</a></h2>
-        <ul>
-        {% for fi in pic_list|sort %}
-          <li><a href="/g/{{ category }}/{{ fi }}" >{{ fi }}</a></li>
-        {% endfor %}
-        </ul>
-      {% endif %}
+    <h1>Graphics List</h1>
+    <ul>
+    {% for pic in pics %}
+      <li><h3><a href="/g/{{ pic.category }}/{{ pic.title }}">{{ pic.title }}</a></h3></li>
     {% endfor %}
-
+    </ul>
 {% endblock %}
