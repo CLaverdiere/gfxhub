@@ -24,7 +24,16 @@ app.config.from_envvar('GRAPHICS_SETTINGS', silent=True)
 # Routes.
 @app.route("/")
 def gfxhub(name=None):
-    return render_template('application.html', name=name)
+    db = get_db()
+
+    cur = db.execute('select count(*) as total_rows from graphics')
+    total_pics = cur.fetchone()['total_rows']
+
+    cur = db.execute('select sum(views) as total_views from graphics')
+    total_views = cur.fetchone()['total_views']
+
+    stats = {'total_pics' : total_pics, 'total_views' : total_views}
+    return render_template('application.html', name=name, stats=stats)
 
 # Route to informational about page.
 @app.route('/about')
@@ -135,7 +144,7 @@ def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
 
-# Helper functions
+# Helper functions, most taken from official docs.
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXT
@@ -162,6 +171,11 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
+def query_db(query, args=(), one=False):
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
 
 if __name__ == "__main__":
     app.run()
