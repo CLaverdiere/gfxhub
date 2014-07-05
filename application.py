@@ -21,15 +21,17 @@ app.config.update(dict(
 app.config.from_envvar('GRAPHICS_SETTINGS', silent=True)
 
 
-# Routes
+# Routes.
 @app.route("/")
 def gfxhub(name=None):
     return render_template('application.html', name=name)
 
+# Route to informational about page.
 @app.route('/about')
 def about():
     return render_template('about.html')
 
+# Route for users to contribute an image to the collection.
 @app.route('/contribute', methods=['GET', 'POST'])
 def contribute(categories=None):
     db = get_db()
@@ -48,6 +50,7 @@ def contribute(categories=None):
             return redirect('/g/' + category + '/' + filename)
     return render_template('contribute.html', categories=categories)
 
+# Route to show all categories of images.
 @app.route('/g/')
 def show_graphic_category_list(categories=None):
     db = get_db()
@@ -55,6 +58,7 @@ def show_graphic_category_list(categories=None):
     categories = cur.fetchall()
     return render_template('category_list.html', categories=categories)
 
+# Route to list all pictures belonging to a given image category.
 @app.route('/g/<category>/')
 def show_graphic_list(category=None):
     db = get_db()
@@ -62,10 +66,12 @@ def show_graphic_list(category=None):
     pics = cur.fetchall()
     return render_template('graphics_list.html', pics=pics)
 
+# Route for a specific image in the collection.
 @app.route('/g/<category>/<pic_name>')
 def show_graphic(category=None, pic_name=None, adjacent_pics=None):
     db = get_db()
 
+    # We want to retrieve our routed image, as well as alphabetically adjacent images.
     cur = db.execute('select * from graphics where title=? and category=?', [pic_name, category])
     pic = cur.fetchone()
 
@@ -77,7 +83,18 @@ def show_graphic(category=None, pic_name=None, adjacent_pics=None):
 
     adjacent_pics = {'prev' : prevpic, 'next': nextpic}
 
+    # Increment the view counter for the image.
+    db.execute('update graphics set views = views + 1 where title=? and category=?', [pic_name, category])
+    db.commit()
+
     return render_template('graphics.html', category=category, pic=pic, adjacent_pics=adjacent_pics)
+
+@app.route("/g/popular")
+def show_popular_graphics(pics=None, num_shown=5):
+    db = get_db()
+    cur = db.execute('select * from graphics order by views desc limit ' + str(num_shown))
+    pics = cur.fetchall()
+    return render_template('popular.html', pics=pics)
 
 @app.errorhandler(404)
 def page_not_found(error):

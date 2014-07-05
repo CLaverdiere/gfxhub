@@ -12,5 +12,7 @@
   {% endif %}
 
   <h1>{{ pic.title }}</h1>
+  <p>Views: {{ pic.views }} </p>
+
   <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" />
 {% endblock %}

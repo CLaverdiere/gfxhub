@@ -3,8 +3,6 @@
 {% block content %}
     <h1>Graphics List</h1>
     <ul>
-    {% for pic in pics %}
-      <li><h3><a href="/g/{{ pic.category }}/{{ pic.title }}">{{ pic.title }}</a></h3></li>
-    {% endfor %}
+      {% include 'pics_list_view.html' %}
     </ul>
 {% endblock %}
