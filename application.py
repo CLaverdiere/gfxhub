@@ -31,11 +31,14 @@ def gfxhub(name=None):
 def about():
     return render_template('about.html')
 
+# Route to the most starred graphics.
 @app.route("/g/best")
 def show_best_graphics(pics=None, num_shown=5):
     db = get_db()
+
     cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
     pics = cur.fetchall()
+
     return render_template('best.html', pics=pics)
 
 # Route for users to contribute an image to the collection.
@@ -57,9 +60,27 @@ def contribute(categories=None):
             return redirect('/g/' + category + '/' + filename)
     return render_template('contribute.html', categories=categories)
 
+# Route to a overview/gallery of graphics page.
+@app.route('/gallery')
+def gallery(num_shown = 5):
+    db = get_db()
+
+    cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
+    best_pics = cur.fetchall()
+
+    cur = db.execute('select * from graphics order by views desc limit ' + str(num_shown))
+    popular_pics = cur.fetchall()
+
+    cur = db.execute('select * from graphics order by created_at desc limit ' + str(num_shown))
+    recent_pics = cur.fetchall()
+
+    pics = {'best': best_pics, 'popular': popular_pics, 'recent': recent_pics}
+
+    return render_template('gallery.html', pics=pics, num_shown=num_shown)
+
 # Route to show all categories of images.
 @app.route('/g/')
-def show_graphic_category_list(categories=None):
+def show_graphic_category_list():
     db = get_db()
     cur = db.execute('select distinct category from graphics order by category desc');
     categories = cur.fetchall()
@@ -75,7 +96,7 @@ def show_graphic_list(category=None):
 
 # Route for a specific image in the collection.
 @app.route('/g/<category>/<pic_name>', methods=['GET', 'POST'])
-def show_graphic(category=None, pic_name=None, adjacent_pics=None):
+def show_graphic(category=None, pic_name=None):
     db = get_db()
 
     # Increment starred count on POST.
@@ -99,10 +120,11 @@ def show_graphic(category=None, pic_name=None, adjacent_pics=None):
     db.execute('update graphics set views = views + 1 where title=? and category=?', [pic_name, category])
     db.commit()
 
-    return render_template('graphics.html', category=category, pic=pic, adjacent_pics=adjacent_pics)
+    return render_template('graphic.html', category=category, pic=pic, adjacent_pics=adjacent_pics)
 
+# Route to the most viewed graphics.
 @app.route("/g/popular")
-def show_popular_graphics(pics=None, num_shown=5):
+def show_popular_graphics(num_shown=5):
     db = get_db()
     cur = db.execute('select * from graphics order by views desc limit ' + str(num_shown))
     pics = cur.fetchall()

@@ -14,9 +14,11 @@
   <h1>{{ pic.title }}</h1>
   <p>Views: {{ pic.views }} | Starred: {{ pic.starred }} time(s) </p>
 
-  <form action="" method=post>
-    <button type="submit" name="star" value="star">Star this Graphic</button>
-  </form>
+  <p>
+    <form method=post>
+      <button type="submit" name="star" value="star">Star this Graphic</button>
+    </form>
+  </p>
 
   <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" />
 {% endblock %}

@@ -6,4 +6,5 @@ create table graphics (
   info text,
   starred integer,
   views integer
+  created_at datetime
 );
