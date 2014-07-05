@@ -31,6 +31,13 @@ def gfxhub(name=None):
 def about():
     return render_template('about.html')
 
+@app.route("/g/best")
+def show_best_graphics(pics=None, num_shown=5):
+    db = get_db()
+    cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
+    pics = cur.fetchall()
+    return render_template('best.html', pics=pics)
+
 # Route for users to contribute an image to the collection.
 @app.route('/contribute', methods=['GET', 'POST'])
 def contribute(categories=None):
@@ -67,9 +74,14 @@ def show_graphic_list(category=None):
     return render_template('graphics_list.html', pics=pics)
 
 # Route for a specific image in the collection.
-@app.route('/g/<category>/<pic_name>')
+@app.route('/g/<category>/<pic_name>', methods=['GET', 'POST'])
 def show_graphic(category=None, pic_name=None, adjacent_pics=None):
     db = get_db()
+
+    # Increment starred count on POST.
+    if request.method == 'POST':
+        if request.form['star']:
+            db.execute('update graphics set starred = starred + 1 where title=? and category=?', [pic_name, category])
 
     # We want to retrieve our routed image, as well as alphabetically adjacent images.
     cur = db.execute('select * from graphics where title=? and category=?', [pic_name, category])

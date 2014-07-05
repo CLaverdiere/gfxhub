@@ -12,7 +12,11 @@
   {% endif %}
 
   <h1>{{ pic.title }}</h1>
-  <p>Views: {{ pic.views }} </p>
+  <p>Views: {{ pic.views }} | Starred: {{ pic.starred }} time(s) </p>
+
+  <form action="" method=post>
+    <button type="submit" name="star" value="star">Star this Graphic</button>
+  </form>
 
   <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" />
 {% endblock %}
