@@ -2,6 +2,8 @@ import os, sqlite3
 from flask import Flask, url_for, render_template, request, redirect, session, abort, flash, g
 from werkzeug.utils import secure_filename
 
+# TODO Bug: Stars / views get stuck at None. Make default values of 0.
+
 # Globals
 G_DIR = "static/g_pics/"
 ALLOWED_EXT = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -67,6 +69,8 @@ def contribute(categories=None):
             db.commit()
             flash("Successfully uploaded graphic. Thanks!")
             return redirect('/g/' + category + '/' + filename)
+        else:
+            flash("That filetype isn't supported. Please use one of: " + " ".join(ALLOWED_EXT))
     return render_template('contribute.html', categories=categories)
 
 # Route to a overview/gallery of graphics page.
