@@ -84,7 +84,7 @@ def gallery(num_shown = 5):
     cur = db.execute('select * from graphics order by views desc limit ' + str(num_shown))
     popular_pics = cur.fetchall()
 
-    cur = db.execute('select * from graphics order by created_at asc limit ' + str(num_shown))
+    cur = db.execute('select * from graphics order by created_at desc limit ' + str(num_shown))
     recent_pics = cur.fetchall()
 
     pics = {'best': best_pics, 'popular': popular_pics, 'recent': recent_pics}
