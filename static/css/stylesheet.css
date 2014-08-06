@@ -1,0 +1,39 @@
+body {
+  background: #07153C;
+  color: #acb6d0;
+}
+
+a {
+  color: #acb6d0;
+}
+
+a:visited {
+  color: #7785ac;
+}
+
+div {
+  background: #172959;
+  border: 3px solid #4D5F8F;
+  margin: 10px;
+  padding: 10px;
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+/* http://css-tricks.com/examples/hrs/ */
+hr {
+  border: 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(left, rgba(200,200,200,0), rgba(200,200,200,0.75), rgba(200,200,200,0));
+  background-image:    -moz-linear-gradient(left, rgba(200,200,200,0), rgba(200,200,200,0.75), rgba(200,200,200,0));
+  background-image:     -ms-linear-gradient(left, rgba(200,200,200,0), rgba(200,200,200,0.75), rgba(200,200,200,0));
+  background-image:      -o-linear-gradient(left, rgba(200,200,200,0), rgba(200,200,200,0.75), rgba(200,200,200,0));
+}
+
+.gallery-item {
+  border: 2px solid #4D5F8F;
+  display: inline-block;
+  margin: 10px;
+}

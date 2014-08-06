@@ -1,34 +1,32 @@
 {% extends 'application.html' %}
 
 {% block content %}
-  <div id="recent-graphics">
-    <h1>Top {{ num_shown }} Most Recent Graphics</h1>
-    <ul>
-      {% for pic in pics['recent'] %}
-        <li><h3><a href="/g/{{ pic.category }}/{{pic.title}}">{{ pic.title }}</a></h3></li>
-        <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" width="200px" height="200px"/>
-      {% endfor %}
-    </ul>
-  </div>
 
-  <div id="best-graphics">
-    <h1>Top {{ num_shown }} Rated Graphics</h1>
-    <ul>
-      {% for pic in pics['best'] %}
-        <li><h3><a href="/g/{{ pic.category }}/{{pic.title}}">{{ pic.title }}</a></h3></li>
-        <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" width="200px" height="200px"/>
-      {% endfor %}
-    </ul>
-  </div>
+<div id="recent-graphics">
+  <h1>Top {{ num_shown }} Most Recent Graphics</h1>
+  <ul>
+  {% for pic in pics['recent'] %}
+    <img class="gallery-item" src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" width="200px" height="200px"/>
+  {% endfor %}
+  </ul>
+</div>
 
-  <div id="popular-graphics">
-    <h1>Top {{ num_shown }} Most Viewed Graphics</h1>
-    <ul>
-      {% for pic in pics['popular'] %}
-        <li><h3><a href="/g/{{ pic.category }}/{{pic.title}}">{{ pic.title }}</a></h3></li>
-        <img src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" width="200px" height="200px"/>
-      {% endfor %}
-    </ul>
-  </div>
+<div id="best-graphics">
+  <h1>Top {{ num_shown }} Rated Graphics</h1>
+  <ul>
+  {% for pic in pics['best'] %}
+    <img class="gallery-item" src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" width="200px" height="200px"/>
+  {% endfor %}
+  </ul>
+</div>
+
+<div id="popular-graphics">
+  <h1>Top {{ num_shown }} Most Viewed Graphics</h1>
+  <ul>
+  {% for pic in pics['popular'] %}
+    <img class="gallery-item" src="/static/g_pics/{{ pic.category }}/{{ pic.title }}" width="200px" height="200px"/>
+  {% endfor %}
+  </ul>
+</div>
 
 {% endblock %}

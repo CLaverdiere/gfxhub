@@ -35,7 +35,7 @@ def gfxhub(name=None):
     total_views = cur.fetchone()['total_views']
 
     stats = {'total_pics' : total_pics, 'total_views' : total_views}
-    return render_template('application.html', name=name, stats=stats)
+    return render_template('home.html', name=name, stats=stats)
 
 # Route to informational about page.
 @app.route('/about')
@@ -75,7 +75,7 @@ def contribute(categories=None):
 
 # Route to a overview/gallery of graphics page.
 @app.route('/gallery')
-def gallery(num_shown = 5):
+def gallery(num_shown=10):
     db = get_db()
 
     cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
