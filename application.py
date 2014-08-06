@@ -121,8 +121,8 @@ def show_graphic(category=None, pic_name=None):
     cur = db.execute('select * from graphics where title=? and category=?', [pic_name, category])
     pic = cur.fetchone()
 
-    prevcur = db.execute('select * from graphics where id=? and category=?', [pic['id'] - 1, category])
-    nextcur = db.execute('select * from graphics where id=? and category=?', [pic['id'] + 1, category])
+    prevcur = db.execute('select * from graphics where id<? and category=? LIMIT 1', [pic['id'] - 1, category])
+    nextcur = db.execute('select * from graphics where id>? and category=? LIMIT 1', [pic['id'] + 1, category])
 
     prevpic = prevcur.fetchone()
     nextpic = nextcur.fetchone()
