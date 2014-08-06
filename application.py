@@ -121,11 +121,15 @@ def show_graphic(category=None, pic_name=None):
     cur = db.execute('select * from graphics where title=? and category=?', [pic_name, category])
     pic = cur.fetchone()
 
-    prevcur = db.execute('select * from graphics where id<? and category=? LIMIT 1', [pic['id'] - 1, category])
-    nextcur = db.execute('select * from graphics where id>? and category=? LIMIT 1', [pic['id'] + 1, category])
+    cur = db.execute('select * from graphics where category=?', [category])
+    pics = cur.fetchall()
 
-    prevpic = prevcur.fetchone()
-    nextpic = nextcur.fetchone()
+    # Find adjacent pictures by id order.
+    prevpics = filter(lambda p: p['id'] < pic['id'], pics)
+    nextpics = filter(lambda p: p['id'] > pic['id'], pics)
+
+    prevpic = prevpics[-1] if prevpics else None
+    nextpic = nextpics[0] if nextpics else None
 
     adjacent_pics = {'prev' : prevpic, 'next': nextpic}
 
