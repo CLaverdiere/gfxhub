@@ -2,7 +2,7 @@ import os, sqlite3
 from flask import Flask, url_for, render_template, request, redirect, session, abort, flash, g
 from werkzeug.utils import secure_filename
 
-# TODO Bug: Stars / views get stuck at None. Make default values of 0.
+# TODO Thumbnails.
 
 # Globals
 G_DIR = "static/g_pics/"
