@@ -1,10 +1,12 @@
 {% extends 'application.html' %}
 
 {% block content %}
+<div>
   <h1>Graphics Categories</h1>
   <ul>
     {% for category in categories %}
       <li><h3><a href="/g/{{ category.category }}">{{ category.category }}</a></h3></li>
     {% endfor %}
   </ul>
+</div>
 {% endblock %}
