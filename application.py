@@ -70,6 +70,7 @@ def contribute(categories=None):
             db.execute('insert into graphics (title, category) values (?, ?)',
                         [filename, category])
             db.commit()
+            gen_thumbnails()
             flash("Successfully uploaded graphic. Thanks!")
             return redirect('/g/' + category + '/' + filename)
         else:
@@ -191,7 +192,7 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 # Generate 200x200 thumbnails for faster loading of pictures.
-# TODO Should set up a git hook for this.
+# Called on each image upload.
 def gen_thumbnails():
     for root, dirs, files in os.walk(G_DIR):
         for file in files:
