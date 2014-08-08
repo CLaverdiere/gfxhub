@@ -7,20 +7,17 @@ from functools import wraps
 from subprocess import call
 from werkzeug.utils import secure_filename
 
-# TODO remove globals
 # TODO DB helper functions. One connection.
-
-# Globals
-ALLOWED_EXT = ('png', 'jpg', 'jpeg', 'gif')
-THUMBNAIL_SIZE = (200, 200)
 
 # App settings
 app = Flask(__name__)
 app.config.update(dict(
     ADMIN = False,
+    ALLOWED_EXT = ('png', 'jpg', 'jpeg', 'gif'),
     DATABASE = os.path.join(app.root_path, 'graphics.db'),
     DEBUG = False,
     PASS = 'admin',
+    THUMBNAIL_SIZE = (200, 200),
     UPLOAD_FOLDER = 'static/g_pics/',
     USER = 'admin'
 ))
@@ -101,7 +98,7 @@ def contribute(categories=None):
             flash("Successfully uploaded graphic. Thanks!")
             return redirect('/g/' + category + '/' + filename)
         else:
-            flash("That filetype isn't supported. Please use one of: " + " ".join(ALLOWED_EXT))
+            flash("That filetype isn't supported. Please use one of: " + " ".join(app.config['ALLOWED_EXT']))
     return render_template('contribute.html', categories=categories)
 
 # Route to a overview/gallery of graphics page.
@@ -157,8 +154,10 @@ def show_graphic(category=None, pic_name=None):
             flash("Successfully deleted graphic " + pic_name)
             return render_template('admin.html')
 
+        # FIXME: crashes here.
         elif request.form['star']:
             db.execute('update graphics set starred = starred + 1 where title=? and category=?', [pic_name, category])
+            db.commit()
 
     # We want to retrieve our routed image, as well as alphabetically adjacent images.
     cur = db.execute('select * from graphics where category=?', [category])
@@ -195,7 +194,7 @@ def page_not_found(error):
 # Helper functions, some taken from official docs.
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXT
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXT']
 
 @app.teardown_appcontext
 def close_db(error):
@@ -231,10 +230,10 @@ def gen_thumbnails():
     for root, dirs, files in os.walk(app.config["UPLOAD_FOLDER"]):
         for file in files:
             filename = root + '/' + file
-            if not os.path.isfile(filename + '.thumb') and file.endswith(ALLOWED_EXT):
+            if not os.path.isfile(filename + '.thumb') and file.endswith(app.config['ALLOWED_EXT']):
                 print "converting {} to thumbnail.".format(file)
                 image = Image.open(filename)
-                image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
+                image.thumbnail(app.config['THUMBNAIL_SIZE'], Image.ANTIALIAS)
                 image.save(filename + '.thumb', 'png')
 
 if __name__ == "__main__":
