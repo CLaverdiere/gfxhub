@@ -1,4 +1,6 @@
-import os, sqlite3
+import os
+import sqlite3
+import Image
 from flask import Flask, url_for, render_template, request, redirect, session, abort, flash, g
 from werkzeug.utils import secure_filename
 from subprocess import call
@@ -7,8 +9,8 @@ from subprocess import call
 
 # Globals
 G_DIR = "static/g_pics/"
-ALLOWED_EXT = set(['png', 'jpg', 'jpeg', 'gif'])
-
+ALLOWED_EXT = ('png', 'jpg', 'jpeg', 'gif')
+THUMBNAIL_SIZE = (200, 200)
 
 # App settings
 app = Flask(__name__)
@@ -190,15 +192,15 @@ def query_db(query, args=(), one=False):
 
 # Generate 200x200 thumbnails for faster loading of pictures.
 # TODO Should set up a git hook for this.
-# FIXME Only convert files that don't have a thumbnail already.
 def gen_thumbnails():
     for root, dirs, files in os.walk(G_DIR):
         for file in files:
-            if file.endswith(".png"):
+            filename = root + '/' + file
+            if not os.path.isfile(filename + '.thumb') and file.endswith(ALLOWED_EXT):
                 print "converting {} to thumbnail.".format(file)
-                call(["convert", "-thumbnail", "200x200", 
-                      "{}".format(root + '/' + file), 
-                      "{}.thumb".format(root + '/' + file)])
+                image = Image.open(filename)
+                image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
+                image.save(filename + '.thumb', 'png')
 
 if __name__ == "__main__":
     app.run()
