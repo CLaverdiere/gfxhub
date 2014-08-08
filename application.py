@@ -1,6 +1,7 @@
 import os, sqlite3
 from flask import Flask, url_for, render_template, request, redirect, session, abort, flash, g
 from werkzeug.utils import secure_filename
+from subprocess import call
 
 # TODO Thumbnails.
 
@@ -154,7 +155,7 @@ def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
 
-# Helper functions, most taken from official docs.
+# Helper functions, some taken from official docs.
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXT
@@ -186,6 +187,18 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
+
+# Generate 200x200 thumbnails for faster loading of pictures.
+# TODO Should set up a git hook for this.
+# FIXME Only convert files that don't have a thumbnail already.
+def gen_thumbnails():
+    for root, dirs, files in os.walk(G_DIR):
+        for file in files:
+            if file.endswith(".png"):
+                print "converting {} to thumbnail.".format(file)
+                call(["convert", "-thumbnail", "200x200", 
+                      "{}".format(root + '/' + file), 
+                      "{}.thumb".format(root + '/' + file)])
 
 if __name__ == "__main__":
     app.run()
