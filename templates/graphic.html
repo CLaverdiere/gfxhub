@@ -2,7 +2,8 @@
 
 {% block content %}
 <div>
-  <a href="/g/">Return to graphics index</a>
+  <a href="/gallery">Return to gallery</a> |
+  <a href="/g/{{ pic.category }}">Return to index</a>
 
   {% if adjacent_pics['prev'] %}
     | <a href="/g/{{ pic.category }}/{{ adjacent_pics['prev'].title }}">Prev</a>
