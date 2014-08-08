@@ -78,18 +78,20 @@ def contribute(categories=None):
 def gallery(num_shown=10):
     db = get_db()
 
-    cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
-    best_pics = cur.fetchall()
+    pics, labels = dict(), dict()
+    orderings = {'created_at' : ['recent', 'Most Recent'], 
+                 'starred' : ['best', 'Highest Rated'],
+                 'views' : ['popular', 'Most Viewed']}
 
-    cur = db.execute('select * from graphics order by views desc limit ' + str(num_shown))
-    popular_pics = cur.fetchall()
+    for order in orderings:
+        alias = orderings[order][0]
+        desc = orderings[order][1]
 
-    cur = db.execute('select * from graphics order by created_at desc limit ' + str(num_shown))
-    recent_pics = cur.fetchall()
+        cur = db.execute('select * from graphics order by {} desc limit {}'.format(order, num_shown))
+        pics[alias] = cur.fetchall()
+        labels[alias] = desc
 
-    pics = {'best': best_pics, 'popular': popular_pics, 'recent': recent_pics}
-
-    return render_template('gallery.html', pics=pics, num_shown=num_shown)
+    return render_template('gallery.html', pics=pics, labels=labels, num_shown=num_shown)
 
 # Route to show all categories of images.
 @app.route('/g/')
