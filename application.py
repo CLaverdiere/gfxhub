@@ -8,19 +8,23 @@ from subprocess import call
 from werkzeug.utils import secure_filename
 
 # TODO remove globals
+# TODO DB helper functions. One connection.
 
 # Globals
-G_DIR = "static/g_pics/"
 ALLOWED_EXT = ('png', 'jpg', 'jpeg', 'gif')
 THUMBNAIL_SIZE = (200, 200)
 
 # App settings
 app = Flask(__name__)
-app.config.from_object('settings')
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'graphics.db'),
-    UPLOAD_FOLDER = G_DIR
+    ADMIN = False,
+    DATABASE = os.path.join(app.root_path, 'graphics.db'),
+    DEBUG = False,
+    PASS = 'admin',
+    UPLOAD_FOLDER = 'static/g_pics/',
+    USER = 'admin'
 ))
+app.config.from_object('settings')
 
 
 # Authentication
@@ -62,6 +66,12 @@ def gfxhub(name=None):
 def about():
     return render_template('about.html')
 
+@app.route('/admin')
+@requires_auth
+def admin():
+    app.config['ADMIN'] = True
+    return render_template('admin.html')
+
 # Route to the most starred graphics.
 @app.route("/g/best")
 def show_best_graphics(pics=None, num_shown=5):
@@ -96,6 +106,7 @@ def contribute(categories=None):
 
 # Route to a overview/gallery of graphics page.
 @app.route('/gallery')
+@requires_auth
 def gallery(num_shown=10):
     db = get_db()
 
@@ -131,19 +142,25 @@ def show_graphic_list(category=None):
     return render_template('graphics_list.html', pics=pics)
 
 # Route for a specific image in the collection.
-@app.route('/g/<category>/<pic_name>', methods=['GET', 'POST'])
+@app.route('/g/<category>/<pic_name>', methods=['GET', 'POST', 'DELETE'])
 def show_graphic(category=None, pic_name=None):
     db = get_db()
 
-    # Increment starred count on POST.
-    if request.method == 'POST':
-        if request.form['star']:
-            db.execute('update graphics set starred = starred + 1 where title=? and category=?', [pic_name, category])
-
-    # We want to retrieve our routed image, as well as alphabetically adjacent images.
     cur = db.execute('select * from graphics where title=? and category=?', [pic_name, category])
     pic = cur.fetchone()
 
+    # Increment starred count on POST.
+    if request.method == 'POST':
+        if request.form['delete']:
+            db.execute('delete from graphics where id=?', [pic['id']])
+            db.commit()
+            flash("Successfully deleted graphic " + pic_name)
+            return render_template('admin.html')
+
+        elif request.form['star']:
+            db.execute('update graphics set starred = starred + 1 where title=? and category=?', [pic_name, category])
+
+    # We want to retrieve our routed image, as well as alphabetically adjacent images.
     cur = db.execute('select * from graphics where category=?', [category])
     pics = cur.fetchall()
 
@@ -211,7 +228,7 @@ def query_db(query, args=(), one=False):
 # Generate 200x200 thumbnails for faster loading of pictures.
 # Called on each image upload.
 def gen_thumbnails():
-    for root, dirs, files in os.walk(G_DIR):
+    for root, dirs, files in os.walk(app.config["UPLOAD_FOLDER"]):
         for file in files:
             filename = root + '/' + file
             if not os.path.isfile(filename + '.thumb') and file.endswith(ALLOWED_EXT):
