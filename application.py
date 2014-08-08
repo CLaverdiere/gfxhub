@@ -21,8 +21,9 @@ app.config.update(dict(
     UPLOAD_FOLDER = 'static/g_pics/',
     USER = 'admin'
 ))
-app.config.from_object('settings')
 
+if(os.path.isfile('settings.py')):
+    app.config.from_object('settings')
 
 # Authentication
 def authenticate():
