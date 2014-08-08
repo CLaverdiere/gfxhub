@@ -1,11 +1,13 @@
+import Image
 import os
 import sqlite3
-import Image
-from flask import Flask, url_for, render_template, request, redirect, session, abort, flash, g
-from werkzeug.utils import secure_filename
-from subprocess import call
 
-# TODO Thumbnails.
+from flask import Flask, Response, abort, flash, g, redirect, render_template, request, session, url_for 
+from functools import wraps
+from subprocess import call
+from werkzeug.utils import secure_filename
+
+# TODO remove globals
 
 # Globals
 G_DIR = "static/g_pics/"
@@ -14,16 +16,31 @@ THUMBNAIL_SIZE = (200, 200)
 
 # App settings
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object('settings')
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'graphics.db'),
-    DEBUG=True,
-    SECRET_KEY='development key',
-    USERNAME='admin',
-    PASSWORD='default',
     UPLOAD_FOLDER = G_DIR
 ))
-app.config.from_envvar('GRAPHICS_SETTINGS', silent=True)
+
+
+# Authentication
+def authenticate():
+    return Response(
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+def check_auth(user, passwd):
+    return user == (app.config['USER'] or 'admin') and passwd == (app.config['PASS'] or 'admin')
 
 
 # Routes.
