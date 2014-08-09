@@ -4,10 +4,10 @@ import sqlite3
 
 from flask import Flask, Response, abort, flash, g, redirect, render_template, request, session, url_for 
 from functools import wraps
-from subprocess import call
 from werkzeug.utils import secure_filename
 
 # TODO DB helper functions. One connection.
+# TODO borked on heroku.
 
 # App settings
 app = Flask(__name__)
