@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 
 # TODO DB helper functions. One connection.
-# TODO borked on heroku.
+# TODO upload / deletions borked on heroku.
 
 # App settings
 app = Flask(__name__)
@@ -152,7 +152,7 @@ def show_graphic(category=None, pic_name=None):
             db.execute('delete from graphics where id=?', [pic['id']])
             db.commit()
             flash("Successfully deleted graphic " + pic_name)
-            return render_template('admin.html')
+            return redirect('/admin')
 
         # FIXME: crashes here.
         elif request.form['star']:
