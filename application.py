@@ -1,10 +1,10 @@
-import Image
 import os
 import sqlite3
 
 from flask import Flask, Response, abort, flash, g, redirect, render_template, request, session, url_for 
 from functools import wraps
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 # TODO DB helper functions. One connection.
 # TODO borked on heroku.
@@ -104,7 +104,6 @@ def contribute(categories=None):
 
 # Route to a overview/gallery of graphics page.
 @app.route('/gallery')
-@requires_auth
 def gallery(num_shown=10):
     db = get_db()
 
@@ -232,7 +231,7 @@ def gen_thumbnails():
         for file in files:
             filename = root + '/' + file
             if not os.path.isfile(filename + '.thumb') and file.endswith(app.config['ALLOWED_EXT']):
-                print "converting {} to thumbnail.".format(file)
+                print("converting {} to thumbnail.".format(file))
                 image = Image.open(filename)
                 image.thumbnail(app.config['THUMBNAIL_SIZE'], Image.ANTIALIAS)
                 image.save(filename + '.thumb', 'png')
