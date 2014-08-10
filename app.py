@@ -16,7 +16,7 @@ app.config.update(dict(
     ALLOWED_EXT = ('png', 'jpg', 'jpeg', 'gif'),
     DATABASE = os.path.join(app.root_path, 'graphics.db'),
     DEFAULT_PICS_SHOWN = 10,
-    DEBUG = False,
+    DEBUG = True,
     PASS = 'admin',
     THUMBNAIL_SIZE = (200, 200),
     UPLOAD_FOLDER = 'static/g_pics/',
