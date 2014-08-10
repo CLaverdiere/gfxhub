@@ -18,6 +18,7 @@ app.config.update(dict(
     DEFAULT_PICS_SHOWN = 10,
     DEBUG = True,
     PASS = 'admin',
+    SECRET_KEY = 'devkey'
     THUMBNAIL_SIZE = (200, 200),
     UPLOAD_FOLDER = 'static/g_pics/',
     USER = 'admin'
