@@ -102,14 +102,6 @@ def show_all_graphics():
 
     return render_template('all.html', pics=pics)
 
-# Route to show all categories of images.
-@app.route('/g/categories')
-def show_graphic_category_list():
-    db = get_db()
-    cur = db.execute('select distinct category from graphics order by category desc');
-    categories = cur.fetchall()
-    return render_template('category_list.html', categories=categories)
-
 # Route to the most starred graphics.
 @app.route('/g/best')
 def show_best_graphics(num_shown=app.config['DEFAULT_PICS_SHOWN']):
@@ -119,6 +111,14 @@ def show_best_graphics(num_shown=app.config['DEFAULT_PICS_SHOWN']):
     pics = cur.fetchall()
 
     return render_template('best.html', pics=pics)
+
+# Route to show all categories of images.
+@app.route('/g/categories')
+def show_graphic_category_list():
+    db = get_db()
+    cur = db.execute('select distinct category from graphics order by category desc');
+    categories = cur.fetchall()
+    return render_template('category_list.html', categories=categories)
 
 # Route to list all pictures belonging to a given image category.
 @app.route('/g/<category>/')
@@ -256,4 +256,5 @@ def gen_thumbnails():
                 image.save(filename + '.thumb', 'png')
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
