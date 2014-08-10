@@ -15,6 +15,7 @@ app.config.update(dict(
     ADMIN = False,
     ALLOWED_EXT = ('png', 'jpg', 'jpeg', 'gif'),
     DATABASE = os.path.join(app.root_path, 'graphics.db'),
+    DEFAULT_PICS_SHOWN = 10,
     DEBUG = False,
     PASS = 'admin',
     THUMBNAIL_SIZE = (200, 200),
@@ -46,7 +47,7 @@ def check_auth(user, passwd):
 
 
 # Routes.
-@app.route("/")
+@app.route('/')
 def gfxhub(name=None):
     db = get_db()
 
@@ -70,25 +71,6 @@ def admin():
     app.config['ADMIN'] = True
     return render_template('admin.html')
 
-@app.route('/all')
-def all():
-    db = get_db()
-
-    cur = db.execute('select * from graphics order by RANDOM() desc')
-    pics = cur.fetchall()
-
-    return render_template('all.html', pics=pics)
-
-# Route to the most starred graphics.
-@app.route("/g/best")
-def show_best_graphics(pics=None, num_shown=5):
-    db = get_db()
-
-    cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
-    pics = cur.fetchall()
-
-    return render_template('best.html', pics=pics)
-
 # Route for users to contribute an image to the collection.
 @app.route('/contribute', methods=['GET', 'POST'])
 def contribute(categories=None):
@@ -111,33 +93,32 @@ def contribute(categories=None):
             flash("That filetype isn't supported. Please use one of: " + " ".join(app.config['ALLOWED_EXT']))
     return render_template('contribute.html', categories=categories)
 
-# Route to a overview/gallery of graphics page.
-@app.route('/gallery')
-def gallery(num_shown=10):
+@app.route('/g/')
+def show_all_graphics():
     db = get_db()
 
-    pics, labels = dict(), dict()
-    orderings = {'created_at' : ['recent', 'Most Recent'], 
-                 'starred' : ['best', 'Highest Rated'],
-                 'views' : ['popular', 'Most Viewed']}
+    cur = db.execute('select * from graphics order by id')
+    pics = cur.fetchall()
 
-    for order in orderings:
-        alias = orderings[order][0]
-        desc = orderings[order][1]
-
-        cur = db.execute('select * from graphics order by {} desc limit {}'.format(order, num_shown))
-        pics[alias] = cur.fetchall()
-        labels[alias] = desc
-
-    return render_template('gallery.html', pics=pics, labels=labels, num_shown=num_shown)
+    return render_template('all.html', pics=pics)
 
 # Route to show all categories of images.
-@app.route('/g/')
+@app.route('/g/categories')
 def show_graphic_category_list():
     db = get_db()
     cur = db.execute('select distinct category from graphics order by category desc');
     categories = cur.fetchall()
     return render_template('category_list.html', categories=categories)
+
+# Route to the most starred graphics.
+@app.route('/g/best')
+def show_best_graphics(num_shown=app.config['DEFAULT_PICS_SHOWN']):
+    db = get_db()
+
+    cur = db.execute('select * from graphics order by starred desc limit ' + str(num_shown))
+    pics = cur.fetchall()
+
+    return render_template('best.html', pics=pics)
 
 # Route to list all pictures belonging to a given image category.
 @app.route('/g/<category>/')
@@ -187,13 +168,42 @@ def show_graphic(category=None, pic_name=None):
 
     return render_template('graphic.html', category=category, pic=pic, adjacent_pics=adjacent_pics)
 
+@app.route('/g/gallery')
+def show_gallery():
+    db = get_db()
+
+    cur = db.execute('select * from graphics order by RANDOM() desc')
+    pics = cur.fetchall()
+
+    return render_template('gallery.html', pics=pics)
+
 # Route to the most viewed graphics.
-@app.route("/g/popular")
-def show_popular_graphics(num_shown=5):
+@app.route('/g/popular')
+def show_popular_graphics(num_shown=app.config['DEFAULT_PICS_SHOWN']):
     db = get_db()
     cur = db.execute('select * from graphics order by views desc limit ' + str(num_shown))
     pics = cur.fetchall()
     return render_template('popular.html', pics=pics)
+
+# Route to a top graphics page.
+@app.route('/g/top')
+def gallery(num_shown=app.config['DEFAULT_PICS_SHOWN']):
+    db = get_db()
+
+    pics, labels = dict(), dict()
+    orderings = {'created_at' : ['recent', 'Most Recent'], 
+                 'starred' : ['best', 'Highest Rated'],
+                 'views' : ['popular', 'Most Viewed']}
+
+    for order in orderings:
+        alias = orderings[order][0]
+        desc = orderings[order][1]
+
+        cur = db.execute('select * from graphics order by {} desc limit {}'.format(order, num_shown))
+        pics[alias] = cur.fetchall()
+        labels[alias] = desc
+
+    return render_template('top.html', pics=pics, labels=labels, num_shown=num_shown)
 
 @app.errorhandler(404)
 def page_not_found(error):

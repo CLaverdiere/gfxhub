@@ -1,8 +1,10 @@
-{% extends "application.html" %}
+{% extends "app.html" %}
 
 {% block style %} 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" type="text/css" />
 {% endblock %}
+
+{% block nav %} {% endblock %}
 
 {% block content %}
   <div class="main-section">
@@ -11,11 +13,11 @@
     {% else %}
       <h2>Welcome</h2>
     {% endif %}
+
     <p><a href="/contribute">Contribute</a></p>
-    <p><a href="/gallery">Gallery</a></p>
-    <p><a href="/g/">Index</a></p>
-    {# <p><a href="/g/best">View the best contributions</a></p> #}
-    {# <p><a href="/g/popular">View the most popular contributions</a></p> #}
+    <p><a href="/g/gallery">Gallery</a></p>
+    <p><a href="/g/categories">Index</a></p>
+    <p><a href="/g/top">Top</a></p>
 
     <hr>
 

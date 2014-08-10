@@ -1,15 +1,11 @@
-{% extends 'application.html' %}
+{% extends 'app.html' %}
 
 {% block content %}
 
 <div id="all-graphics">
-  <h1>All Graphics (Random order)</h1>
-  <ul>
-  {% for pic in pics %}
-    <a href="/g/{{ pic.category }}/{{ pic.title }}">
-      <img class="gallery-item thumbnail" src="/static/g_pics/{{ pic.category }}/{{ pic.title }}.thumb"/></a>
-  {% endfor %}
-  </ul>
+  <h1>All Graphics (By ID)</h1>
+
+  {% include 'pics_view.html' %}
 </div>
 
 {% endblock %}

@@ -1,0 +1,6 @@
+<ul>
+{% for pic in pics %}
+  <a href="/g/{{ pic.category }}/{{ pic.title }}">
+    <img class="gallery-item thumbnail" src="/static/g_pics/{{ pic.category }}/{{ pic.title }}.thumb"/></a>
+{% endfor %}
+</ul>
