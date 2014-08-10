@@ -187,7 +187,7 @@ def show_popular_graphics(num_shown=app.config['DEFAULT_PICS_SHOWN']):
 
 # Route to a top graphics page.
 @app.route('/g/top')
-def gallery(num_shown=app.config['DEFAULT_PICS_SHOWN']):
+def show_top_graphics(num_shown=app.config['DEFAULT_PICS_SHOWN']):
     db = get_db()
 
     pics, labels = dict(), dict()
