@@ -70,6 +70,15 @@ def admin():
     app.config['ADMIN'] = True
     return render_template('admin.html')
 
+@app.route('/all')
+def all():
+    db = get_db()
+
+    cur = db.execute('select * from graphics order by RANDOM() desc')
+    pics = cur.fetchall()
+
+    return render_template('all.html', pics=pics)
+
 # Route to the most starred graphics.
 @app.route("/g/best")
 def show_best_graphics(pics=None, num_shown=5):
